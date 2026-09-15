@@ -1,6 +1,14 @@
 package com.smartcam.ai.data.local
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Database
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import androidx.room.Update
 import com.smartcam.ai.data.db.RoomConverters
 import kotlinx.coroutines.flow.Flow
 
