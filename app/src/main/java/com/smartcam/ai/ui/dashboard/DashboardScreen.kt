@@ -71,13 +71,15 @@ fun DashboardScreen(
                         title = "Cameras",
                         value = "3 Active",
                         icon = Icons.Default.Videocam,
-                        modifier = Modifier.weight(1f).clickable { onNavigateToCameras() }
+                        modifier = Modifier.weight(1f),
+                        onClick = onNavigateToCameras
                     )
                     DashboardStatCard(
                         title = "Events Today",
                         value = "12",
                         icon = Icons.Default.Notifications,
-                        modifier = Modifier.weight(1f).clickable { onNavigateToEvents() }
+                        modifier = Modifier.weight(1f),
+                        onClick = onNavigateToEvents
                     )
                 }
             }
@@ -91,13 +93,15 @@ fun DashboardScreen(
                         title = "Presence Logs",
                         value = "4 Sessions",
                         icon = Icons.Default.Timer,
-                        modifier = Modifier.weight(1f).clickable { onNavigateToActivity() }
+                        modifier = Modifier.weight(1f),
+                        onClick = onNavigateToActivity
                     )
                     DashboardStatCard(
                         title = "Retention",
                         value = "7 Days",
                         icon = Icons.Default.Storage,
-                        modifier = Modifier.weight(1f) {}
+                        modifier = Modifier.weight(1f),
+                        onClick = {}
                     )
                 }
             }
@@ -122,9 +126,14 @@ fun DashboardStatCard(
     title: String,
     value: String,
     icon: ImageVector,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
-    ElevatedCard(modifier = modifier) {
+    ElevatedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             Spacer(Modifier.height(8.dp))
