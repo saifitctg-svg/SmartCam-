@@ -21,7 +21,9 @@ enum class EventType {
     LINE_CROSSING,
     LOITERING,
     CAMERA_OFFLINE,
-    CAMERA_ONLINE
+    CAMERA_ONLINE,
+    OBJECT_LEFT,
+    OBJECT_REMOVED
 }
 
 @Entity(tableName = "cameras")
@@ -117,4 +119,43 @@ data class SmartRuleEntity(
     val pushAlert: Boolean = true,
     val emailAlert: Boolean = false,
     val isEnabled: Boolean = true
+)
+
+@Entity(
+    tableName = "notifications",
+    foreignKeys = [
+        ForeignKey(
+            entity = SecurityEventEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["eventId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index("eventId"), Index("createdAt")]
+)
+data class NotificationEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val eventId: Long,
+    val title: String,
+    val message: String,
+    val channel: String,
+    val isRead: Boolean = false,
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+@Entity(tableName = "users", indices = [Index(value = ["username"], unique = true)])
+data class UserEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val username: String,
+    val displayName: String,
+    val role: String,
+    val isEnabled: Boolean = true,
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+@Entity(tableName = "app_settings")
+data class AppSettingEntity(
+    @PrimaryKey val key: String,
+    val value: String,
+    val updatedAt: Long = System.currentTimeMillis()
 )

@@ -45,6 +45,15 @@ object AppModule {
     fun provideRuleDao(db: SmartCamDatabase) = db.ruleDao()
 
     @Provides
+    fun provideNotificationDao(db: SmartCamDatabase) = db.notificationDao()
+
+    @Provides
+    fun provideUserDao(db: SmartCamDatabase) = db.userDao()
+
+    @Provides
+    fun provideAppSettingDao(db: SmartCamDatabase) = db.appSettingDao()
+
+    @Provides
     @Singleton
     fun provideDetectionEngine(engine: MockDetectionEngine): DetectionEngine = engine
 }

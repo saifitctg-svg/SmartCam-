@@ -4,20 +4,20 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.smartcam.ai.ui.dashboard.DashboardScreen
 import com.smartcam.ai.ui.navigation.Screen
+import com.smartcam.ai.ui.app.ActivityScreen
+import com.smartcam.ai.ui.app.AddCameraScreen
+import com.smartcam.ai.ui.app.CameraScreen
+import com.smartcam.ai.ui.app.EventsScreen
+import com.smartcam.ai.ui.app.FeatureStatusScreen
+import com.smartcam.ai.ui.app.PrivacyScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -44,30 +44,26 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToPrivacy = { navController.navigate(Screen.Privacy.route) }
                             )
                         }
-                        composable(Screen.Cameras.route) { PlaceholderScreen("Cameras") }
-                        composable(Screen.AddCamera.route) { PlaceholderScreen("Add Camera") }
-                        composable(Screen.Events.route) { PlaceholderScreen("Events") }
-                        composable(Screen.Activity.route) { PlaceholderScreen("Activity") }
-                        composable(Screen.Settings.route) { PlaceholderScreen("Settings") }
-                        composable(Screen.Privacy.route) { PlaceholderScreen("Privacy & Consent") }
-                        composable(Screen.LiveView.route) { PlaceholderScreen("Live View") }
+                        composable(Screen.Cameras.route) {
+                            CameraScreen(
+                                onBack = { navController.popBackStack() },
+                                onAddCamera = { navController.navigate(Screen.AddCamera.route) }
+                            )
+                        }
+                        composable(Screen.AddCamera.route) { AddCameraScreen { navController.popBackStack() } }
+                        composable(Screen.Events.route) { EventsScreen { navController.popBackStack() } }
+                        composable(Screen.Activity.route) { ActivityScreen { navController.popBackStack() } }
+                        composable(Screen.Reports.route) { FeatureStatusScreen("Reports") { navController.popBackStack() } }
+                        composable(Screen.Notifications.route) { FeatureStatusScreen("Notifications") { navController.popBackStack() } }
+                        composable(Screen.Storage.route) { FeatureStatusScreen("Storage") { navController.popBackStack() } }
+                        composable(Screen.Users.route) { FeatureStatusScreen("Users & Permissions") { navController.popBackStack() } }
+                        composable(Screen.Audit.route) { FeatureStatusScreen("Audit Logs") { navController.popBackStack() } }
+                        composable(Screen.Settings.route) { FeatureStatusScreen("Settings") { navController.popBackStack() } }
+                        composable(Screen.Privacy.route) { PrivacyScreen { navController.popBackStack() } }
+                        composable(Screen.LiveView.route) { FeatureStatusScreen("Live Camera") { navController.popBackStack() } }
                     }
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun PlaceholderScreen(title: String) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(24.dp)
-        )
     }
 }

@@ -87,6 +87,36 @@ interface RuleDao {
     suspend fun insertRule(rule: SmartRuleEntity): Long
 }
 
+@Dao
+interface NotificationDao {
+    @Query("SELECT * FROM notifications ORDER BY createdAt DESC LIMIT 100")
+    fun getRecentNotifications(): Flow<List<NotificationEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertNotification(notification: NotificationEntity): Long
+
+    @Query("UPDATE notifications SET isRead = 1 WHERE id = :id")
+    suspend fun markRead(id: Long)
+}
+
+@Dao
+interface UserDao {
+    @Query("SELECT * FROM users WHERE isEnabled = 1 ORDER BY displayName ASC")
+    fun getActiveUsers(): Flow<List<UserEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUser(user: UserEntity): Long
+}
+
+@Dao
+interface AppSettingDao {
+    @Query("SELECT * FROM app_settings WHERE key = :key")
+    suspend fun get(key: String): AppSettingEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun put(setting: AppSettingEntity)
+}
+
 @Database(
     entities = [
         CameraEntity::class,
@@ -94,7 +124,10 @@ interface RuleDao {
         SecurityEventEntity::class,
         ActivitySessionEntity::class,
         AuditLogEntity::class,
-        SmartRuleEntity::class
+        SmartRuleEntity::class,
+        NotificationEntity::class,
+        UserEntity::class,
+        AppSettingEntity::class
     ],
     version = 1,
     exportSchema = false
@@ -107,4 +140,7 @@ abstract class SmartCamDatabase : RoomDatabase() {
     abstract fun activityDao(): ActivityDao
     abstract fun auditDao(): AuditDao
     abstract fun ruleDao(): RuleDao
+    abstract fun notificationDao(): NotificationDao
+    abstract fun userDao(): UserDao
+    abstract fun appSettingDao(): AppSettingDao
 }
