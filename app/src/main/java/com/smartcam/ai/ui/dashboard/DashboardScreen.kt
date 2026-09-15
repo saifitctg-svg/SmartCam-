@@ -24,6 +24,9 @@ fun DashboardScreen(
     onNavigateToActivity: () -> Unit,
     onNavigateToPrivacy: () -> Unit
 ) {
+    val cameras = remember { listOf("Front Door", "Living Room", "Office") }
+    val events = remember { getMockEvents() }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -69,15 +72,15 @@ fun DashboardScreen(
                 ) {
                     DashboardStatCard(
                         title = "Cameras",
-                        value = "3 Active",
+                        value = "${cameras.size}",
                         icon = Icons.Default.Videocam,
                         modifier = Modifier.weight(1f),
                         onClick = onNavigateToCameras
                     )
                     DashboardStatCard(
-                        title = "Events Today",
-                        value = "12",
-                        icon = Icons.Default.Notifications,
+                        title = "Events",
+                        value = "${events.size}",
+                        icon = Icons.Default.Warning,
                         modifier = Modifier.weight(1f),
                         onClick = onNavigateToEvents
                     )
@@ -114,7 +117,7 @@ fun DashboardScreen(
                 )
             }
 
-            items(getMockEvents()) { event ->
+            items(events) { event ->
                 EventListItem(event)
             }
         }
