@@ -1,6 +1,7 @@
 package com.smartcam.ai.data.local
 
 import androidx.room.*
+import com.smartcam.ai.data.db.RoomConverters
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -90,6 +91,7 @@ interface RuleDao {
     version = 1,
     exportSchema = false
 )
+@TypeConverters(RoomConverters::class)
 abstract class SmartCamDatabase : RoomDatabase() {
     abstract fun cameraDao(): CameraDao
     abstract fun zoneDao(): ZoneDao
