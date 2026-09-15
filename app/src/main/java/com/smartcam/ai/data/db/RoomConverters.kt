@@ -6,14 +6,26 @@ import com.smartcam.ai.data.local.ZoneType
 
 class RoomConverters {
     @TypeConverter
-    fun fromZoneType(value: ZoneType): String = value.name
+    fun fromZoneType(value: ZoneType?): String? {
+        return value?.name
+    }
 
     @TypeConverter
-    fun toZoneType(value: String): ZoneType = ZoneType.valueOf(value)
+    fun toZoneType(value: String?): ZoneType? {
+        return value?.let {
+            runCatching { ZoneType.valueOf(it) }.getOrNull()
+        }
+    }
 
     @TypeConverter
-    fun fromEventType(value: EventType): String = value.name
+    fun fromEventType(value: EventType?): String? {
+        return value?.name
+    }
 
     @TypeConverter
-    fun toEventType(value: String): EventType = EventType.valueOf(value)
+    fun toEventType(value: String?): EventType? {
+        return value?.let {
+            runCatching { EventType.valueOf(it) }.getOrNull()
+        }
+    }
 }
