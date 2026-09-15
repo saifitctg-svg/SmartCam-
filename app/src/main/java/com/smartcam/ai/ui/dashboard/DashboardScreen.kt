@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -19,14 +19,14 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
+    uiState: DashboardUiState,
     onNavigateToCameras: () -> Unit,
     onNavigateToEvents: () -> Unit,
     onNavigateToActivity: () -> Unit,
+    onNavigateToReports: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     onNavigateToPrivacy: () -> Unit
 ) {
-    val cameras = remember { listOf("Front Door", "Living Room", "Office") }
-    val events = remember { getMockEvents() }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -58,7 +58,11 @@ fun DashboardScreen(
                         Icon(Icons.Default.Info, contentDescription = null)
                         Spacer(Modifier.width(12.dp))
                         Text(
-                            text = "Transparent Monitoring Active. All detection sessions are locally audited.",
+                            text = if (uiState.isDemoData) {
+                                "Demo data active. No cameras are connected and no surveillance is hidden."
+                            } else {
+                                "Transparent monitoring active. Detection sessions are locally audited."
+                            },
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -71,16 +75,38 @@ fun DashboardScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     DashboardStatCard(
-                        title = "Cameras",
-                        value = "${cameras.size}",
+                        title = "Cameras Online",
+                        value = "${uiState.camerasOnline}",
                         icon = Icons.Default.Videocam,
                         modifier = Modifier.weight(1f),
                         onClick = onNavigateToCameras
                     )
                     DashboardStatCard(
-                        title = "Events",
-                        value = "${events.size}",
+                        title = "Cameras Offline",
+                        value = "${uiState.camerasOffline}",
                         icon = Icons.Default.Warning,
+                        modifier = Modifier.weight(1f),
+                        onClick = onNavigateToCameras
+                    )
+                }
+            }
+
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    DashboardStatCard(
+                        title = "Today's Events",
+                        value = "${uiState.todaysEvents}",
+                        icon = Icons.Default.Notifications,
+                        modifier = Modifier.weight(1f),
+                        onClick = onNavigateToEvents
+                    )
+                    DashboardStatCard(
+                        title = "Critical Alerts",
+                        value = "${uiState.criticalAlerts}",
+                        icon = Icons.Default.Error,
                         modifier = Modifier.weight(1f),
                         onClick = onNavigateToEvents
                     )
@@ -93,19 +119,37 @@ fun DashboardScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     DashboardStatCard(
-                        title = "Presence Logs",
-                        value = "4 Sessions",
+                        title = "People Detected",
+                        value = "${uiState.peopleDetected}",
+                        icon = Icons.Default.Person,
+                        modifier = Modifier.weight(1f),
+                        onClick = onNavigateToEvents
+                    )
+                    DashboardStatCard(
+                        title = "Today's Activity",
+                        value = "${uiState.activityMinutes / 60}h ${uiState.activityMinutes % 60}m",
                         icon = Icons.Default.Timer,
                         modifier = Modifier.weight(1f),
                         onClick = onNavigateToActivity
                     )
-                    DashboardStatCard(
-                        title = "Retention",
-                        value = "7 Days",
-                        icon = Icons.Default.Storage,
-                        modifier = Modifier.weight(1f),
-                        onClick = {}
-                    )
+                }
+            }
+
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedButton(onClick = onNavigateToReports, modifier = Modifier.weight(1f)) {
+                        Icon(Icons.Default.Assessment, contentDescription = null)
+                        Spacer(Modifier.width(6.dp))
+                        Text("Reports")
+                    }
+                    OutlinedButton(onClick = onNavigateToSettings, modifier = Modifier.weight(1f)) {
+                        Icon(Icons.Default.Settings, contentDescription = null)
+                        Spacer(Modifier.width(6.dp))
+                        Text("Settings")
+                    }
                 }
             }
 
@@ -117,7 +161,7 @@ fun DashboardScreen(
                 )
             }
 
-            items(events) { event ->
+            items(uiState.recentEvents) { event ->
                 EventListItem(event)
             }
         }
@@ -173,26 +217,3 @@ fun EventListItem(event: SecurityEventEntity) {
         }
     }
 }
-
-private fun getMockEvents() = listOf(
-    SecurityEventEntity(
-        id = 1,
-        cameraId = 1,
-        zoneId = 1,
-        eventType = com.smartcam.ai.data.local.EventType.UNAUTHORIZED_ENTRY,
-        timestamp = System.currentTimeMillis() - 1000 * 60 * 15,
-        confidence = 0.92f,
-        snapshotPath = null,
-        description = "Unauthorized presence detected in Restricted Zone"
-    ),
-    SecurityEventEntity(
-        id = 2,
-        cameraId = 2,
-        zoneId = 2,
-        eventType = com.smartcam.ai.data.local.EventType.ZONE_ENTRY,
-        timestamp = System.currentTimeMillis() - 1000 * 60 * 45,
-        confidence = 0.95f,
-        snapshotPath = null,
-        description = "Presence in Reading Zone detected"
-    )
-)

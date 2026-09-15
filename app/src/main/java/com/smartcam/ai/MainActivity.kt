@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -18,14 +20,23 @@ import com.smartcam.ai.ui.app.CameraScreen
 import com.smartcam.ai.ui.app.EventsScreen
 import com.smartcam.ai.ui.app.FeatureStatusScreen
 import com.smartcam.ai.ui.app.PrivacyScreen
+import com.smartcam.ai.ui.dashboard.DashboardViewModel
+import com.smartcam.ai.data.settings.AppSettings
+import com.smartcam.ai.data.settings.SettingsDataStore
+import com.smartcam.ai.ui.theme.SmartCamTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var settingsDataStore: SettingsDataStore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
+            val settings = settingsDataStore.settings.collectAsStateWithLifecycle(initialValue = AppSettings()).value
+            SmartCamTheme(useDarkTheme = settings.darkTheme) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -37,10 +48,14 @@ class MainActivity : ComponentActivity() {
                         startDestination = Screen.Dashboard.route
                     ) {
                         composable(Screen.Dashboard.route) {
+                            val viewModel: DashboardViewModel = hiltViewModel()
                             DashboardScreen(
+                                uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
                                 onNavigateToCameras = { navController.navigate(Screen.Cameras.route) },
                                 onNavigateToEvents = { navController.navigate(Screen.Events.route) },
                                 onNavigateToActivity = { navController.navigate(Screen.Activity.route) },
+                                onNavigateToReports = { navController.navigate(Screen.Reports.route) },
+                                onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
                                 onNavigateToPrivacy = { navController.navigate(Screen.Privacy.route) }
                             )
                         }
