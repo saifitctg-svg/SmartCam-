@@ -44,6 +44,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.org.jetbrains.kotlinx.coroutines.android)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
