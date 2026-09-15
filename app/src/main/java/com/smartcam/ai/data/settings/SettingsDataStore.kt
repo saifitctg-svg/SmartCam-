@@ -7,7 +7,9 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,13 +25,18 @@ data class AppSettings(
 class SettingsDataStore @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    val settings: Flow<AppSettings> = context.smartCamDataStore.data.map { preferences ->
-        AppSettings(
-            darkTheme = preferences[DARK_THEME] ?: false,
-            monitoringNoticeEnabled = preferences[MONITORING_NOTICE] ?: true,
-            retentionDays = preferences[RETENTION_DAYS] ?: 7
-        )
-    }
+    val settings: Flow<AppSettings> = context.smartCamDataStore.data
+        .catch { error ->
+            if (error is IOException) emit(androidx.datastore.preferences.core.emptyPreferences())
+            else throw error
+        }
+        .map { preferences ->
+            AppSettings(
+                darkTheme = preferences[DARK_THEME] ?: false,
+                monitoringNoticeEnabled = preferences[MONITORING_NOTICE] ?: true,
+                retentionDays = preferences[RETENTION_DAYS] ?: 7
+            )
+        }
 
     suspend fun setDarkTheme(enabled: Boolean) {
         context.smartCamDataStore.edit { it[DARK_THEME] = enabled }

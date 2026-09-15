@@ -27,6 +27,8 @@ import com.smartcam.ai.ui.theme.SmartCamTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+private val DefaultAppSettings = AppSettings()
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject
@@ -35,7 +37,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val settings = settingsDataStore.settings.collectAsStateWithLifecycle(initialValue = AppSettings()).value
+            val settings = settingsDataStore.settings.collectAsStateWithLifecycle(
+                initialValue = DefaultAppSettings
+            ).value
             SmartCamTheme(useDarkTheme = settings.darkTheme) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
